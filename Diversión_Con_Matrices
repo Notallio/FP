@@ -1,0 +1,165 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+const int SIZE = 20;
+int matriz[SIZE][SIZE];
+
+ // ================================================================
+ // Escribe el código completo de tu solución aquí debajo
+ // ================================================================
+
+
+void filas(int matriz[SIZE][SIZE], int a, int b, int m) { //Intercambia las filas a y b
+    //n y m son el tamaño de la fila y la columna
+    int temp[SIZE]; //aray temporal
+    for (int i = 0; i < m; i++) {
+        temp[i] = matriz[a][i];
+        matriz[a][i] = matriz[b][i];
+        matriz[b][i] = temp[i];
+    }
+}
+
+void columnas(int matriz[SIZE][SIZE], int a, int b, int n) {//intercambia columnas a y b
+    int temp[SIZE]; //aray temporal
+    for (int i = 0; i < n; i++) {
+        temp[i] = matriz[i][a];
+        matriz[i][a] = matriz[i][b];
+        matriz[i][b] = temp[i];
+    }
+}
+
+void cruz(int matriz[SIZE][SIZE], int f, int c, int d, int n, int m) { //Rellena con el dígito d las diagonales que pasan por el elemento de la fila f y columna c.
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (i - j == f - c || i + j == f + c) {
+                matriz[i][j] = d;
+            }
+        }
+    }
+}
+
+void rotarFila(int matriz[SIZE][SIZE], int a, int m) { //Rota circularmente la fila |f|. Si f > 0, la rotación es hacia la derecha. Si f < 0, la rotación es hacia la izquierda
+    if (a > 0) {
+        a--;  // Ajustar índice para que coincida con la matriz (fila 1 es índice 0)
+        int temp = matriz[a][m - 1];  // Guardar el último elemento
+        for (int j = m - 1; j > 0; j--) {
+            matriz[a][j] = matriz[a][j - 1];  // Desplazar a la derecha
+        }
+        matriz[a][0] = temp;  // Colocar el restante
+    }
+    else {
+        a = (a*-1) - 1;  // Ajustar índice
+        int temp = matriz[a][0];  // Guardar el primer elemento
+        for (int j = 0; j < m - 1; j++) {
+            matriz[a][j] = matriz[a][j + 1];  // Desplazar a la izquierda
+        }
+        matriz[a][m - 1] = temp;  // Colocar el restante
+    }
+}
+
+void rotarCol(int matriz[SIZE][SIZE], int a, int n) { //Rota circularmente la columna |c|. Si c > 0, la rotación es hacia abajo. Si c < 0, la rotación es hacia arriba.
+    if (a < 0) {
+        a = (a * -1) - 1;  // Ajustar índice
+         //cout << a << "\n";
+        int temp = matriz[0][a];
+        for (int j = 0; j < n - 1; j++) {
+            matriz[j][a] = matriz[j + 1][a];
+        }
+        matriz[n - 1][a] = temp;  // Colocar el restante
+    }
+    else {
+        a--;
+       // cout << a << "\n";
+        int temp = matriz[n - 1][a];  // Guardar el restante
+
+        for (int i = n - 1; i > 0; i--) {
+            matriz[i][a] = matriz[i - 1][a];  // Desplazar hacia abajo
+        }
+
+        matriz[0][a] = temp;
+    }
+}
+
+void mostrar(int matriz[SIZE][SIZE], int n, int m) { //mostrar la matriz 
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cout << matriz[i][j] << " "; //guardo los valores
+        }
+        cout << "\n"; //salto de linea
+    }
+    cout << "---\n";
+}
+
+bool resuelveCaso() {
+    //int matriz[SIZE][SIZE] = { 0 };
+    // leer los datos de la entrada
+    int fila, col, t;
+    string tipo;
+    cin >> fila >> col;
+
+    if (fila == 0 && col == 0) return false; //centinela
+
+    for (int i = 0; i < fila; i++) {
+        for (int j = 0; j < col; j++) {
+            cin >> matriz[i][j]; //guardo los valores
+        }
+    }
+
+    cin >> t; //num transformaciones
+    int a, b, c;
+
+    for (int i = 0; i < t; i++) {
+        cin >> tipo;
+        if (tipo == "rotarFila") {
+            cin >> a;
+            rotarFila(matriz,a, col);
+            //mostrar(matriz, fila, col);
+        }
+        else if (tipo == "rotarCol") {
+            cin >> a;
+            rotarCol(matriz,a, fila);
+            //mostrar(matriz, fila, col);
+        }
+        else if (tipo == "filas") {
+            cin >> a >> b;
+            filas(matriz, a-1, b-1, col);
+        }
+        else if (tipo == "columnas") {
+            cin >> a >> b;
+            columnas(matriz, a-1, b-1, fila);
+        }
+        else if (tipo == "cruz") {
+            cin >> a >> b >> c;
+            cruz(matriz,a-1,b-1,c,fila,col);
+
+        }
+    }
+
+    // resolver el caso posiblemente llamando a otras funciones
+
+    // escribir la solución
+    mostrar(matriz, fila, col);
+    return true;
+}
+
+//@ </answer>
+//  Lo que se escriba dejado de esta línea ya no forma parte de la solución.
+
+int main() {
+    // ajustes para que cin extraiga directamente de un fichero
+#ifndef DOMJUDGE
+    std::ifstream in("casos.txt");
+    auto cinbuf = std::cin.rdbuf(in.rdbuf());
+#endif
+
+    while (resuelveCaso());
+
+    // para dejar todo como estaba al principio
+#ifndef DOMJUDGE
+    std::cin.rdbuf(cinbuf);
+    system("PAUSE");
+#endif
+    return 0;
+}
